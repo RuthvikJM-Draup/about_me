@@ -1,7 +1,5 @@
 import json
-
-user_details = dict()
-user_credentials = dict()
+import os
 
 
 def add_profile():
@@ -12,38 +10,59 @@ def add_profile():
     about_me_ = input("Give a bio about yourself:")
     passion = input("Enter your passion:")
 
-    while True:
+    if os.path.getsize('user_details.json') == 0:
+        if os.path.getsize('user_credentials.json') == 0:
+            user_details = dict()
+            user_credentials = dict()
+            email = input("Enter you email:")
+            password = input("Enter your password:")
+            print("Your password is ", password)
+            user_details[email] = {'name': name, 'profession': profession, 'contact': contact, 'skills': skills,
+                                   'about_me_': about_me_, 'passion': passion}
+            user_credentials[email] = {'password': password}
+            with open('user_details.json', 'w') as my_file:
+                json.dump(user_details, my_file)
+                my_file.write("\n")
+            with open('user_credentials.json', 'w') as my_file:
+                json.dump(user_credentials, my_file)
+                my_file.write("\n")
+    else:
+        with open('user_details.json') as json_file:
+            user_details = json.load(json_file)
+        with open('user_credentials.json') as json_file:
+            user_credentials = json.load(json_file)
         check_mail = input("Enter your email:")
+        password = input("Enter your password:")
         if check_mail in user_details.keys():
             print("Email already present enter again")
         else:
             email = check_mail
-            break
+            user_details[email] = {'name': name, 'profession': profession, 'contact': contact, 'skills': skills,
+                                   'about_me_': about_me_, 'passion': passion}
+            user_credentials[email] = {'password': password}
 
-    password = input("Enter your password:")
-    print("Your password is ", password)
-
-    user_details[email] = {'name': name, 'profession': profession, 'contact': contact, 'skills': skills,
-                           'about_me_': about_me_, 'passion': passion}
-    user_credentials[email] = {'password': password}
-
-    with open('user_details.json', 'w') as my_file:
-        json.dump(user_details, my_file)
-        my_file.write("\n")
+        with open('user_details.json', 'w') as my_file:
+            json.dump(user_details, my_file)
+            my_file.write("\n")
+        with open('user_credentials.json', 'w') as my_file:
+            json.dump(user_credentials, my_file)
+            my_file.write("\n")
 
 
 def edit_profile():
     with open('user_details.json') as json_file:
-        users_details = json.load(json_file)
+        user_details = json.load(json_file)
+    with open('user_credentials.json') as json_file:
+        user_credentials = json.load(json_file)
     verify_mail = input("Enter your email")
-    if verify_mail in users_details.keys():
+    if verify_mail in user_details.keys():
         verify_password = input("Enter your password")
         if user_credentials[verify_mail]['password'] == verify_password:
             details = input("Enter the user details to be edited")
             new_info = input("Enter the new data")
-            users_details[verify_mail][details] = new_info
+            user_details[verify_mail][details] = new_info
             with open('user_details.json', 'w') as my_file:
-                json.dump(users_details, my_file)
+                json.dump(user_details, my_file)
         else:
             print("Enter the correct password")
     else:
@@ -52,22 +71,24 @@ def edit_profile():
 
 def delete_profile():
     with open('user_details.json') as json_file:
-        users_details = json.load(json_file)
+        user_details = json.load(json_file)
+    with open('user_credentials.json') as json_file:
+        user_credentials = json.load(json_file)
     verify_mail = input("Enter your email:")
-    if verify_mail in users_details.keys():
+    if verify_mail in user_details.keys():
         verify_password = input("Enter your password:")
         if user_credentials[verify_mail]['password'] == verify_password:
             choice = int(input("1. Delete profile/n 2.Delete an entry"))
             if choice == 1:
                 del user_credentials[verify_mail]
-                del users_details[verify_mail]
+                del user_details[verify_mail]
                 with open('user_details.json', 'w') as my_file:
-                    json.dump(users_details, my_file)
+                    json.dump(user_details, my_file)
             elif choice == 2:
                 entry = input("Enter the detail to be deleted:")
-                del users_details[verify_mail][entry]
+                del user_details[verify_mail][entry]
                 with open('user_details.json', 'w') as my_file:
-                    json.dump(users_details, my_file)
+                    json.dump(user_details, my_file)
             else:
                 print("Invalid choice")
         else:
@@ -78,22 +99,24 @@ def delete_profile():
 
 def find_profile():
     with open('user_details.json') as json_file:
-        users_details = json.load(json_file)
+        user_details = json.load(json_file)
+    with open('user_credentials.json') as json_file:
+        user_credentials = json.load(json_file)
     verify_mail = input("Enter your email:")
-    if verify_mail in users_details.keys():
+    if verify_mail in user_details.keys():
         verify_password = input("Enter your password:")
         if user_credentials[verify_mail]['password'] == verify_password:
             choice = int(input("1.Profile/n 2.One detail"))
             if choice == 1:
                 detail = input("Enter any one detail to find your profile:")
-                if detail in users_details[verify_mail].values():
-                    print(users_details[verify_mail])
+                if detail in user_details[verify_mail].values():
+                    print(user_details[verify_mail])
                 else:
                     print("Invalid input")
             elif choice == 2:
                 one_detail = input("Detail to find:")
-                if one_detail in users_details[verify_mail].keys():
-                    print(users_details[verify_mail][one_detail])
+                if one_detail in user_details[verify_mail].keys():
+                    print(user_details[verify_mail][one_detail])
             else:
                 print("Invalid choice")
         else:
