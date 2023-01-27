@@ -84,6 +84,8 @@ def delete_profile():
                 del user_details[verify_mail]
                 with open('user_details.json', 'w') as my_file:
                     json.dump(user_details, my_file)
+                with open('user_credentials.json.json', 'w') as my_file:
+                    json.dump(user_credentials, my_file)
             elif choice == 2:
                 entry = input("Enter the detail to be deleted:")
                 del user_details[verify_mail][entry]
